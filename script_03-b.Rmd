@@ -58,6 +58,56 @@ d) Write down some thoughts about what might explain these increases and decreas
 
 See [here](https://rpubs.com/dkane/week-3) for my answers. No need to copy exactly what I have done! Make yours better.
 
+```{r s1}
+
+sep_total <- inner_join(sep_old, sep_new, by = c("id", "title", "name", "department")) %>% 
+  rename(u_grad_new = u_grad.y, u_grad_old = u_grad.x) %>% 
+  mutate(u_grad_change = u_grad_old - u_grad_new)
+
+increase <- sep_total %>% 
+  arrange(u_grad_change) %>% 
+  head(5)
+
+gt(increase) %>% 
+  tab_header(title = md("**Classes with Greatest Increase**"), 
+                        subtitle = "From 9/1 to 9/22") %>% 
+  cols_label(id = "Course ID",
+             title = "Course Title",
+             name = "Course Name", 
+             department = "Department",
+             u_grad_old = "9/1 Enrollment",
+             u_grad_new = "9/22 Enrollment",
+             u_grad_change = "Change")
+
+decrease <- sep_total %>% 
+  arrange(desc(u_grad_change)) %>% 
+  head(5)
+
+gt(decrease) %>% 
+  tab_header(title = md("**Classes with Greatest Decrease**"), 
+                        subtitle = "From 9/1 to 9/22") %>% 
+  cols_label(id = "Course ID",
+             title = "Course Title",
+             name = "Course Name", 
+             department = "Department",
+             u_grad_old = "9/1 Enrollment",
+             u_grad_new = "9/22 Enrollment",
+             u_grad_change = "Change")
+
+change_join <- rbind(increase, decrease) %>% 
+  ggplot(aes(x = fct_reorder(title, u_grad_change), y = u_grad_change, fill = department)) + 
+  geom_col() +
+  theme_bw() +
+  theme(axis.text.x = element_text(angle = 45)) +
+  scale_fill_brewer() +
+  labs(title = "Change in Course Enrollment at Harvard 
+       from September 1 to September 22",
+       x = "Course Title",
+       y = "Decrease in Enrollment")
+
+change_join
+
+```
 
 
 
@@ -69,6 +119,13 @@ See [here](https://rpubs.com/dkane/week-3) for my answers. No need to copy exact
 With our actual Preceptor Table, how might we investigate the effect of work assigned in the first two weeks? Would the estimated Average Treatment Effect be accurate? Why or why not?
 
 Make a spreadsheet --- I recommend using Google sheets, but anything will do --- which shows a simple version of that actual Preceptor Table. What are the units? What are the outcomes? What is the treatment? What is the causal effect? You may assign whichever of the 10 classes you like to treatment and the rest to control.
+
+```{r}
+
+# Outcome is sep_new and treatment is workload, since Dean Claybaugh is concerned about the level of work given during first few weeks
+
+```
+
 
 ## Scene 3
 
